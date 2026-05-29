@@ -159,8 +159,10 @@ body {
   align-items: center;
   gap: 6px;
   padding: 0 2px;
+  flex-wrap: wrap;
 }
 .inp-alert-dt.visible { display: flex; }
+.inp-alert-hint { display: none; }
 .inp-alert-dt input[type="datetime-local"] {
   flex: 1;
   background: var(--white);
@@ -368,6 +370,34 @@ body {
 }
 .btn-del-alert:active { background: var(--sand); }
 
+/* ── ALERTE DANS LA MODALE MODIFIER ── */
+.modal-alert-section {
+  display: flex; flex-direction: column; gap: 8px;
+  padding: 10px 12px;
+  background: var(--wa2);
+  border: 1px solid var(--wa-border);
+  border-radius: var(--radius);
+}
+.modal-alert-section .modal-label { color: var(--wa); margin-bottom: 0; }
+.modal-alert-dt { display: flex; align-items: center; gap: 8px; }
+.modal-alert-dt input[type="datetime-local"] {
+  flex: 1; background: var(--white);
+  border: 1.5px solid var(--wa-border); border-radius: 6px;
+  padding: 8px 10px; font-family: 'Jost', sans-serif;
+  font-size: .8rem; color: var(--txt); outline: none; cursor: pointer;
+  transition: border-color var(--tr);
+}
+.modal-alert-dt input[type="datetime-local"]:focus { border-color: var(--wa); }
+.btn-remove-alert-modal {
+  height: 32px; padding: 0 10px;
+  border: 1px solid rgba(176,58,46,.25); border-radius: 5px;
+  background: none; color: var(--pu);
+  font-family: 'Jost', sans-serif; font-size: .6rem; font-weight: 700;
+  letter-spacing: .06em; text-transform: uppercase;
+  cursor: pointer; flex-shrink: 0; transition: all var(--tr);
+}
+.btn-remove-alert-modal:active { background: rgba(176,58,46,.07); }
+
 /* ── CARTE ARCHIVE ── */
 .arch-item {
   background: var(--white); border: 1px solid var(--sand);
@@ -544,6 +574,14 @@ body {
         <button class="pp" data-priority="normal" onclick="setEditPriority('normal')"><span class="pp-dot pn"></span><span class="pp-txt">Normal</span></button>
         <button class="pp" data-priority="high"   onclick="setEditPriority('high')"><span class="pp-dot ph"></span><span class="pp-txt">Important</span></button>
         <button class="pp" data-priority="urgent" onclick="setEditPriority('urgent')"><span class="pp-dot pu"></span><span class="pp-txt">Urgent</span></button>
+      </div>
+    </div>
+    <!-- Section alerte (visible si la tâche a une alerte) -->
+    <div class="modal-alert-section" id="modalAlertSection" style="display:none">
+      <span class="modal-label">📲 Échéance &amp; Alertes WhatsApp (−24h &amp; −1h)</span>
+      <div class="modal-alert-dt">
+        <input type="datetime-local" id="editAlertInput" />
+        <button class="btn-remove-alert-modal" onclick="removeAlertInModal()">✕ Supprimer</button>
       </div>
     </div>
     <div class="modal-actions">
@@ -742,6 +780,19 @@ function openModal(id) {
   document.querySelectorAll('#modalPrio .pp').forEach(btn => {
     btn.classList.toggle('active', btn.dataset.priority === task.priority);
   });
+
+  // Alerte : afficher section si la tâche a une date d'échéance
+  const alertSection = document.getElementById('modalAlertSection');
+  const alertInput   = document.getElementById('editAlertInput');
+  if (task.alertAt) {
+    alertSection.style.display = 'flex';
+    alertInput.value = localDatetimeValue(new Date(task.alertAt));
+    alertInput.min   = localDatetimeValue(new Date());
+  } else {
+    alertSection.style.display = 'none';
+    alertInput.value = '';
+  }
+
   document.getElementById('modalOverlay').classList.add('open');
   setTimeout(() => { const ei = document.getElementById('editInput'); ei.focus(); ei.select(); }, 80);
 }
@@ -756,7 +807,31 @@ function saveEdit() {
   const task = tasks.find(t => t.id === editingId);
   if (!task) return;
   task.text = text; task.priority = editPriority;
-  closeModal(); saveAndRender('Modifiée');
+
+  // Sauvegarder la nouvelle date d'alerte si la section est visible
+  const alertSection = document.getElementById('modalAlertSection');
+  const alertInput   = document.getElementById('editAlertInput');
+  if (alertSection.style.display !== 'none' && alertInput.value) {
+    const newDate = new Date(alertInput.value).toISOString();
+    // Reset alertSent uniquement si la date a changé
+    if (task.alertAt !== newDate) {
+      task.alertAt     = newDate;
+      task.alert24sent = false;
+      task.alert1sent  = false;
+    }
+  }
+
+  closeModal(); saveAndRender('Modifiée ✓');
+}
+
+function removeAlertInModal() {
+  const task = tasks.find(t => t.id === editingId);
+  if (!task) return;
+  delete task.alertAt;
+  delete task.alert24sent;
+  delete task.alert1sent;
+  document.getElementById('modalAlertSection').style.display = 'none';
+  document.getElementById('editAlertInput').value = '';
 }
 
 /* ── RENDU ── */
