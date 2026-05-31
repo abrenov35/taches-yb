@@ -18,6 +18,9 @@
 :root {
   --navy:      #162D49;
   --navy2:     #0C2731;
+  --lav:       #A495C3;
+  --lav2:      #7B6BA8;
+  --lav-light: #EDE9F4;
   --cream:     #F3EAE2;
   --sand:      #E0D5CA;
   --sand2:     #cfc5b8;
@@ -70,7 +73,7 @@ body {
 .hdr-right { display: flex; flex-direction: column; align-items: flex-end; gap: 1px; }
 .ctr-val   { font-size: 1.5rem; font-weight: 700; color: var(--white); line-height: 1; }
 .ctr-label { font-size: .52rem; font-weight: 500; letter-spacing: .1em; text-transform: uppercase; color: rgba(255,255,255,.45); }
-.rule { height: 3px; background: linear-gradient(90deg, var(--ph) 0%, var(--ph) 50px, transparent 50px); flex-shrink: 0; }
+.rule { height: 3px; background: linear-gradient(90deg, var(--lav), var(--lav2), var(--navy)); flex-shrink: 0; }
 
 /* ── SAISIE ── */
 .inp-sec {
@@ -191,6 +194,7 @@ body {
   border: none; border-radius: var(--radius); padding: 13px;
   font-family: 'Jost', sans-serif; font-size: .78rem; font-weight: 700;
   letter-spacing: .16em; text-transform: uppercase; cursor: pointer; transition: all var(--tr);
+  border-left: 4px solid var(--lav);
 }
 .add-btn:active { background: var(--navy2); transform: scale(.98); }
 
@@ -207,10 +211,10 @@ body {
   cursor: pointer; transition: all var(--tr);
   -webkit-user-select: none; user-select: none;
 }
-.tab.active { color: var(--navy); border-bottom-color: var(--navy); }
+.tab.active { color: var(--lav2); border-bottom-color: var(--lav); }
 .tab.tab-arch.active { color: var(--green); border-bottom-color: var(--green); }
 .tab-badge {
-  display: inline-block; background: var(--navy); color: var(--white);
+  display: inline-block; background: var(--lav); color: var(--white);
   font-size: .55rem; font-weight: 700; border-radius: 10px;
   padding: 1px 6px; margin-left: 4px; vertical-align: middle;
 }
@@ -441,7 +445,7 @@ body {
 }
 .modal-overlay.open { opacity: 1; pointer-events: all; }
 .modal {
-  background: var(--white); border-top: 3px solid var(--navy);
+  background: var(--white); border-top: 3px solid var(--lav);
   padding: 18px 16px calc(20px + var(--safe-bottom));
   width: 100%; max-width: 480px; margin: 0 auto;
   transform: translateY(20px); transition: transform .2s ease;
@@ -488,9 +492,21 @@ body {
 
 <div id="app">
   <header class="hdr">
-    <div class="hdr-brand">
-      <div class="hdr-logo">AB RENOV</div>
-      <div class="hdr-sub">Aménagement &amp; Rénovation</div>
+    <div class="hdr-brand" style="display:flex;align-items:center;gap:10px;">
+      <svg width="36" height="36" viewBox="0 0 42 42" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0;">
+        <rect width="42" height="42" rx="8" fill="#0D1E30"/>
+        <polygon points="7,32 13,10 16,10 22,32 19,32 17.5,26 11.5,26 10,32" fill="white"/>
+        <polygon points="12.2,23 16.8,23 14.5,14.5" fill="#0D1E30"/>
+        <rect x="23" y="10" width="3" height="22" fill="white"/>
+        <path d="M26,10 Q34,10 34,16 Q34,21 26,21 Q34,21 34,27 Q34,32 26,32 Z" fill="white"/>
+        <path d="M26,12 Q31,12 31,16 Q31,19.5 26,19.5 Z" fill="#0D1E30"/>
+        <path d="M26,22.5 Q32,22.5 32,27 Q32,30 26,30 Z" fill="#0D1E30"/>
+        <rect x="13" y="17" width="3" height="3" fill="#A495C3"/>
+      </svg>
+      <div>
+        <div class="hdr-logo">RENOV</div>
+        <div class="hdr-sub">Tâches YB</div>
+      </div>
     </div>
     <div class="hdr-right">
       <span class="ctr-label">tâches</span>
@@ -1022,3 +1038,4 @@ async function syncFromSheets() {
 </script>
 </body>
 </html>
+
